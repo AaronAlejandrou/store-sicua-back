@@ -1,5 +1,6 @@
 package com.sicua.domain.storeconfig.service;
 
+import com.sicua.application.auth.SessionService;
 import com.sicua.domain.storeconfig.entity.StoreConfig;
 import com.sicua.domain.storeconfig.repository.StoreConfigRepository;
 import org.springframework.stereotype.Service;
@@ -11,26 +12,21 @@ import org.springframework.stereotype.Service;
 public class StoreConfigDomainService {
     
     private final StoreConfigRepository storeConfigRepository;
+    private final SessionService sessionService;
     
-    public StoreConfigDomainService(StoreConfigRepository storeConfigRepository) {
+    public StoreConfigDomainService(StoreConfigRepository storeConfigRepository, SessionService sessionService) {
         this.storeConfigRepository = storeConfigRepository;
+        this.sessionService = sessionService;
     }
     
     /**
-     * Ensures there's always a store configuration available
-     * @return the current or default store configuration
+     * Ensures there's always a store configuration available for the current user
+     * @return the current user's store configuration
      */
     public StoreConfig ensureStoreConfigExists() {
-        return storeConfigRepository.findCurrent()
-                .orElseGet(() -> {
-                    StoreConfig defaultConfig = new StoreConfig(
-                            "SICUA Store",
-                            "Default Address",
-                            "contact@sicua.com",
-                            "000-000-0000"
-                    );
-                    return storeConfigRepository.save(defaultConfig);
-                });
+        String storeId = sessionService.getCurrentStoreId();
+        return storeConfigRepository.findById(storeId)
+                .orElseThrow(() -> new IllegalStateException("Store configuration not found for current user"));
     }
     
     /**

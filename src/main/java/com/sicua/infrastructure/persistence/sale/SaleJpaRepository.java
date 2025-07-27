@@ -13,4 +13,14 @@ public interface SaleJpaRepository extends JpaRepository<SaleEntity, String> {
     List<SaleEntity> findAllOrderByCreatedAtDesc();
     
     List<SaleEntity> findByInvoiced(Boolean invoiced);
+    
+    // Store-aware methods
+    List<SaleEntity> findByStoreId(String storeId);
+    
+    @Query("SELECT s FROM SaleEntity s WHERE s.storeId = :storeId ORDER BY s.createdAt DESC")
+    List<SaleEntity> findByStoreIdOrderByCreatedAtDesc(String storeId);
+    
+    List<SaleEntity> findByInvoicedAndStoreId(Boolean invoiced, String storeId);
+    
+    SaleEntity findByIdAndStoreId(String id, String storeId);
 }

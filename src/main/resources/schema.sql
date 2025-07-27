@@ -3,44 +3,54 @@ CREATE DATABASE IF NOT EXISTS sicua_db;
 
 USE sicua_db;
 
--- Products table
+-- Products table (linked to store owner)
 CREATE TABLE IF NOT EXISTS products (
     product_id VARCHAR(36) PRIMARY KEY,
+    store_id VARCHAR(36) NOT NULL,
     name VARCHAR(255) NOT NULL,
+    brand VARCHAR(255),
     category VARCHAR(100),
     price DECIMAL(10,2) NOT NULL,
     quantity INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_product_store_id (store_id),
     INDEX idx_product_name (name),
-    INDEX idx_product_category (category)
+    INDEX idx_product_category (category),
+    FOREIGN KEY (store_id) REFERENCES store_config(id) ON DELETE CASCADE
 );
 
--- Store configuration table
+-- Store configuration table (serves as user table)
 CREATE TABLE IF NOT EXISTS store_config (
     id VARCHAR(36) PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     address TEXT,
-    email VARCHAR(255),
+    email VARCHAR(255) UNIQUE NOT NULL,
     phone VARCHAR(50),
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_store_email (email)
 );
 
--- Sales table
+-- Sales table (linked to store owner)
 CREATE TABLE IF NOT EXISTS sales (
     id VARCHAR(36) PRIMARY KEY,
+    store_id VARCHAR(36) NOT NULL,
     client_dni VARCHAR(20),
     client_name VARCHAR(255),
     date TIMESTAMP NOT NULL,
     total DECIMAL(10,2) NOT NULL,
     invoiced BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_sale_store_id (store_id),
     INDEX idx_sale_date (date),
     INDEX idx_sale_client_dni (client_dni),
-    INDEX idx_sale_invoiced (invoiced)
+    INDEX idx_sale_invoiced (invoiced),
+    FOREIGN KEY (store_id) REFERENCES store_config(id) ON DELETE CASCADE
 );
 
--- Sale items table
+-- Sale items table (linked to sales)
 CREATE TABLE IF NOT EXISTS sale_items (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     sale_id VARCHAR(36) NOT NULL,
@@ -48,6 +58,11 @@ CREATE TABLE IF NOT EXISTS sale_items (
     name VARCHAR(255) NOT NULL,
     price DECIMAL(10,2) NOT NULL,
     quantity INTEGER NOT NULL,
+    subtotal DECIMAL(10,2) NOT NULL,
+    INDEX idx_sale_item_sale_id (sale_id),
+    INDEX idx_sale_item_product_id (product_id),
+    FOREIGN KEY (sale_id) REFERENCES sales(id) ON DELETE CASCADE
+);
     subtotal DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (sale_id) REFERENCES sales(id) ON DELETE CASCADE,
     INDEX idx_sale_item_sale_id (sale_id),

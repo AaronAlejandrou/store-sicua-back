@@ -54,6 +54,33 @@ public class SaleRepositoryImpl implements SaleRepository {
                 .collect(Collectors.toList());
     }
     
+    @Override
+    public Optional<Sale> findByIdAndStoreId(SaleId saleId, String storeId) {
+        SaleEntity entity = jpaRepository.findByIdAndStoreId(saleId.getValue(), storeId);
+        return entity != null ? Optional.of(toDomain(entity)) : Optional.empty();
+    }
+    
+    @Override
+    public List<Sale> findAllByStoreId(String storeId) {
+        return jpaRepository.findByStoreId(storeId).stream()
+                .map(this::toDomain)
+                .collect(Collectors.toList());
+    }
+    
+    @Override
+    public List<Sale> findAllByStoreIdOrderByCreatedAtDesc(String storeId) {
+        return jpaRepository.findByStoreIdOrderByCreatedAtDesc(storeId).stream()
+                .map(this::toDomain)
+                .collect(Collectors.toList());
+    }
+    
+    @Override
+    public List<Sale> findByInvoicedAndStoreId(boolean invoiced, String storeId) {
+        return jpaRepository.findByInvoicedAndStoreId(invoiced, storeId).stream()
+                .map(this::toDomain)
+                .collect(Collectors.toList());
+    }
+    
     private Sale toDomain(SaleEntity entity) {
         List<SaleItem> items = entity.getItems().stream()
                 .map(this::saleItemToDomain)
@@ -61,6 +88,7 @@ public class SaleRepositoryImpl implements SaleRepository {
         
         Sale sale = new Sale(
                 SaleId.of(entity.getId()),
+                entity.getStoreId(),
                 entity.getClientDni(),
                 entity.getClientName(),
                 items
@@ -85,6 +113,7 @@ public class SaleRepositoryImpl implements SaleRepository {
     private SaleEntity toEntity(Sale sale) {
         SaleEntity entity = new SaleEntity(
                 sale.getId().getValue(),
+                sale.getStoreId(),
                 sale.getClientDni(),
                 sale.getClientName(),
                 sale.getDate(),

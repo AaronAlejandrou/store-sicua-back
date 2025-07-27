@@ -1,5 +1,6 @@
 package com.sicua.application.sale.usecase;
 
+import com.sicua.application.auth.SessionService;
 import com.sicua.application.sale.dto.SaleResponse;
 import com.sicua.domain.sale.entity.Sale;
 import com.sicua.domain.sale.repository.SaleRepository;
@@ -20,9 +21,11 @@ public class GetAllSalesUseCase {
     private static final Logger logger = LoggerFactory.getLogger(GetAllSalesUseCase.class);
     
     private final SaleRepository saleRepository;
+    private final SessionService sessionService;
     
-    public GetAllSalesUseCase(SaleRepository saleRepository) {
+    public GetAllSalesUseCase(SaleRepository saleRepository, SessionService sessionService) {
         this.saleRepository = saleRepository;
+        this.sessionService = sessionService;
     }
     
     @Transactional(readOnly = true)
@@ -30,9 +33,10 @@ public class GetAllSalesUseCase {
         logger.info("Retrieving all sales");
         
         try {
-            List<Sale> sales = saleRepository.findAllOrderByCreatedAtDesc();
+            String storeId = sessionService.getCurrentStoreId();
+            List<Sale> sales = saleRepository.findAllByStoreIdOrderByCreatedAtDesc(storeId);
             
-            logger.info("Retrieved {} sales", sales.size());
+            logger.info("Retrieved {} sales for store {}", sales.size(), storeId);
             
             return sales.stream()
                     .map(this::mapToResponse)

@@ -3,6 +3,7 @@ package com.sicua.domain.product.service;
 import com.sicua.domain.product.entity.Product;
 import com.sicua.domain.product.repository.ProductRepository;
 import com.sicua.domain.product.valueobject.ProductId;
+import com.sicua.application.auth.SessionService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,9 +15,11 @@ import java.util.List;
 public class ProductDomainService {
     
     private final ProductRepository productRepository;
+    private final SessionService sessionService;
     
-    public ProductDomainService(ProductRepository productRepository) {
+    public ProductDomainService(ProductRepository productRepository, SessionService sessionService) {
         this.productRepository = productRepository;
+        this.sessionService = sessionService;
     }
     
     /**
@@ -25,7 +28,8 @@ public class ProductDomainService {
      * @return true if the product can be deleted
      */
     public boolean canDeleteProduct(ProductId productId) {
-        return productRepository.findById(productId)
+        String storeId = sessionService.getCurrentStoreId();
+        return productRepository.findByIdAndStoreId(productId, storeId)
                 .map(product -> product.getQuantity() == 0)
                 .orElse(false);
     }
@@ -47,7 +51,8 @@ public class ProductDomainService {
      * @return true if the name already exists
      */
     public boolean isProductNameExists(String name, ProductId excludeProductId) {
-        return productRepository.findAll().stream()
+        String storeId = sessionService.getCurrentStoreId();
+        return productRepository.findAllByStoreId(storeId).stream()
                 .filter(product -> !product.getProductId().equals(excludeProductId))
                 .anyMatch(product -> product.getName().equalsIgnoreCase(name));
     }

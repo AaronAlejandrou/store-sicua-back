@@ -29,6 +29,9 @@ public class SaleEntity {
     @Column(name = "invoiced", nullable = false)
     private Boolean invoiced;
     
+    @Column(name = "store_id", nullable = false, length = 36)
+    private String storeId;
+    
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     
@@ -40,9 +43,10 @@ public class SaleEntity {
         // For JPA
     }
 
-    public SaleEntity(String id, String clientDni, String clientName, LocalDateTime date, 
+    public SaleEntity(String id, String storeId, String clientDni, String clientName, LocalDateTime date, 
                       BigDecimal total, Boolean invoiced, LocalDateTime createdAt) {
         this.id = id;
+        this.storeId = storeId;
         this.clientDni = clientDni;
         this.clientName = clientName;
         this.date = date;
@@ -111,6 +115,14 @@ public class SaleEntity {
 
     public void setInvoiced(Boolean invoiced) {
         this.invoiced = invoiced;
+    }
+
+    public String getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
     }
 
     public LocalDateTime getCreatedAt() {

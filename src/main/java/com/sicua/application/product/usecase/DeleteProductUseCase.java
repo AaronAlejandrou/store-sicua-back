@@ -3,6 +3,7 @@ package com.sicua.application.product.usecase;
 import com.sicua.domain.product.repository.ProductRepository;
 import com.sicua.domain.product.service.ProductDomainService;
 import com.sicua.domain.product.valueobject.ProductId;
+import com.sicua.application.auth.SessionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,10 +19,12 @@ public class DeleteProductUseCase {
     
     private final ProductRepository productRepository;
     private final ProductDomainService productDomainService;
+    private final SessionService sessionService;
     
-    public DeleteProductUseCase(ProductRepository productRepository, ProductDomainService productDomainService) {
+    public DeleteProductUseCase(ProductRepository productRepository, ProductDomainService productDomainService, SessionService sessionService) {
         this.productRepository = productRepository;
         this.productDomainService = productDomainService;
+        this.sessionService = sessionService;
     }
     
     @Transactional
@@ -30,8 +33,9 @@ public class DeleteProductUseCase {
         
         try {
             ProductId id = ProductId.of(productId);
+            String storeId = sessionService.getCurrentStoreId();
             
-            if (!productRepository.existsById(id)) {
+            if (!productRepository.existsByIdAndStoreId(id, storeId)) {
                 throw new IllegalArgumentException("Product not found with ID: " + productId);
             }
             
@@ -41,7 +45,7 @@ public class DeleteProductUseCase {
                 throw new IllegalStateException("Cannot delete product with existing stock");
             }
             
-            productRepository.deleteById(id);
+            productRepository.deleteByIdAndStoreId(id, storeId);
             
             logger.info("Product deleted successfully: {}", productId);
             

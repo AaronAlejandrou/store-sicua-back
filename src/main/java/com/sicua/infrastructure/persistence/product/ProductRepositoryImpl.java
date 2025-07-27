@@ -19,16 +19,26 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
     
     @Override
-    public Optional<Product> findById(ProductId productId) {
-        return jpaRepository.findById(productId.getValue())
+    public Optional<Product> findByIdAndStoreId(ProductId productId, String storeId) {
+        return jpaRepository.findByProductIdAndStoreId(productId.getValue(), storeId)
                 .map(this::toDomain);
     }
     
     @Override
-    public List<Product> findAll() {
-        return jpaRepository.findAll().stream()
+    public List<Product> findAllByStoreId(String storeId) {
+        return jpaRepository.findByStoreId(storeId).stream()
                 .map(this::toDomain)
                 .collect(Collectors.toList());
+    }
+    
+    @Override
+    public boolean existsByIdAndStoreId(ProductId productId, String storeId) {
+        return jpaRepository.existsByProductIdAndStoreId(productId.getValue(), storeId);
+    }
+    
+    // Legacy method for backward compatibility - checks across all stores
+    public boolean existsById(ProductId productId) {
+        return jpaRepository.existsById(productId.getValue());
     }
     
     @Override
@@ -39,18 +49,14 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
     
     @Override
-    public void deleteById(ProductId productId) {
-        jpaRepository.deleteById(productId.getValue());
-    }
-    
-    @Override
-    public boolean existsById(ProductId productId) {
-        return jpaRepository.existsById(productId.getValue());
+    public void deleteByIdAndStoreId(ProductId productId, String storeId) {
+        jpaRepository.deleteByProductIdAndStoreId(productId.getValue(), storeId);
     }
     
     private Product toDomain(ProductEntity entity) {
         Product product = new Product(
                 ProductId.of(entity.getProductId()),
+                entity.getStoreId(),
                 entity.getName(),
                 entity.getBrand(),
                 entity.getCategory(),
@@ -63,6 +69,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     private ProductEntity toEntity(Product product) {
         return new ProductEntity(
                 product.getProductId().getValue(),
+                product.getStoreId(),
                 product.getName(),
                 product.getBrand(),
                 product.getCategory(),

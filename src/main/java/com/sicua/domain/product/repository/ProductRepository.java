@@ -12,17 +12,27 @@ import java.util.Optional;
 public interface ProductRepository {
     
     /**
-     * Find product by its ID
+     * Find product by its ID and store ID
      * @param productId the product identifier
+     * @param storeId the store identifier
      * @return Optional containing the product if found
      */
-    Optional<Product> findById(ProductId productId);
+    Optional<Product> findByIdAndStoreId(ProductId productId, String storeId);
     
     /**
-     * Find all products
-     * @return List of all products
+     * Find all products for a specific store
+     * @param storeId the store identifier
+     * @return List of all products for the store
      */
-    List<Product> findAll();
+    List<Product> findAllByStoreId(String storeId);
+    
+    /**
+     * Check if product exists by ID and store ID
+     * @param productId the product identifier
+     * @param storeId the store identifier
+     * @return true if product exists
+     */
+    boolean existsByIdAndStoreId(ProductId productId, String storeId);
     
     /**
      * Save a product
@@ -32,10 +42,11 @@ public interface ProductRepository {
     Product save(Product product);
     
     /**
-     * Delete a product by its ID
+     * Delete a product by ID and store ID
      * @param productId the product identifier
+     * @param storeId the store identifier
      */
-    void deleteById(ProductId productId);
+    void deleteByIdAndStoreId(ProductId productId, String storeId);
     
     /**
      * Check if a product exists by its ID

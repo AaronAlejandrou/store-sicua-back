@@ -11,4 +11,8 @@ public interface StoreConfigJpaRepository extends JpaRepository<StoreConfigEntit
     
     @Query("SELECT s FROM StoreConfigEntity s ORDER BY s.updatedAt DESC LIMIT 1")
     Optional<StoreConfigEntity> findFirst();
+    
+    Optional<StoreConfigEntity> findByEmail(String email);
+    
+    boolean existsByEmail(String email);
 }

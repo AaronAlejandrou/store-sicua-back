@@ -1,5 +1,6 @@
 package com.sicua.application.sale.usecase;
 
+import com.sicua.application.auth.SessionService;
 import com.sicua.application.sale.dto.SaleResponse;
 import com.sicua.domain.sale.entity.Sale;
 import com.sicua.domain.sale.repository.SaleRepository;
@@ -23,10 +24,12 @@ public class MarkSaleAsInvoicedUseCase {
     
     private final SaleRepository saleRepository;
     private final SaleDomainService saleDomainService;
+    private final SessionService sessionService;
     
-    public MarkSaleAsInvoicedUseCase(SaleRepository saleRepository, SaleDomainService saleDomainService) {
+    public MarkSaleAsInvoicedUseCase(SaleRepository saleRepository, SaleDomainService saleDomainService, SessionService sessionService) {
         this.saleRepository = saleRepository;
         this.saleDomainService = saleDomainService;
+        this.sessionService = sessionService;
     }
     
     @Transactional
@@ -35,8 +38,9 @@ public class MarkSaleAsInvoicedUseCase {
         
         try {
             SaleId id = SaleId.of(saleId);
+            String storeId = sessionService.getCurrentStoreId();
             
-            Sale sale = saleRepository.findById(id)
+            Sale sale = saleRepository.findByIdAndStoreId(id, storeId)
                     .orElseThrow(() -> new IllegalArgumentException("Sale not found with ID: " + saleId));
             
             if (!saleDomainService.canMarkAsInvoiced(sale)) {

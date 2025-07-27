@@ -1,5 +1,6 @@
 package com.sicua.application.product.usecase;
 
+import com.sicua.application.auth.SessionService;
 import com.sicua.application.product.dto.CreateProductRequest;
 import com.sicua.application.product.dto.ProductResponse;
 import com.sicua.domain.product.entity.Product;
@@ -19,23 +20,27 @@ public class CreateProductUseCase {
     private static final Logger logger = LoggerFactory.getLogger(CreateProductUseCase.class);
     
     private final ProductRepository productRepository;
+    private final SessionService sessionService;
     
-    public CreateProductUseCase(ProductRepository productRepository) {
+    public CreateProductUseCase(ProductRepository productRepository, SessionService sessionService) {
         this.productRepository = productRepository;
+        this.sessionService = sessionService;
     }
     
     @Transactional
     public ProductResponse execute(CreateProductRequest request) {
-        logger.info("Creating new product: {} with ID: {}", request.getName(), request.getProductId());
+        String storeId = sessionService.getCurrentStoreId();
+        logger.info("Creating new product: {} for store: {}", request.getName(), storeId);
         
         try {
-            // Check if product ID already exists
-            if (productRepository.existsById(ProductId.of(request.getProductId()))) {
-                throw new IllegalArgumentException("Product with ID " + request.getProductId() + " already exists");
+            // Check if product ID already exists for this store
+            if (productRepository.existsByIdAndStoreId(ProductId.of(request.getProductId()), storeId)) {
+                throw new IllegalArgumentException("Product with ID " + request.getProductId() + " already exists in your store");
             }
             
             Product product = new Product(
                     ProductId.of(request.getProductId()),
+                    storeId,
                     request.getName(),
                     request.getBrand(),
                     request.getCategory(),
@@ -45,7 +50,7 @@ public class CreateProductUseCase {
             
             Product savedProduct = productRepository.save(product);
             
-            logger.info("Product created successfully with ID: {}", savedProduct.getProductId().getValue());
+            logger.info("Product created successfully with ID: {} for store: {}", savedProduct.getProductId().getValue(), storeId);
             
             return mapToResponse(savedProduct);
             

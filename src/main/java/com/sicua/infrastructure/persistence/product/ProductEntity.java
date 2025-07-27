@@ -12,6 +12,9 @@ public class ProductEntity {
     @Column(name = "product_id", length = 36)
     private String productId;
     
+    @Column(name = "store_id", length = 36, nullable = false)
+    private String storeId;
+    
     @Column(name = "name", nullable = false)
     private String name;
     
@@ -37,8 +40,9 @@ public class ProductEntity {
         // For JPA
     }
 
-    public ProductEntity(String productId, String name, String brand, String category, BigDecimal price, Integer quantity, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public ProductEntity(String productId, String storeId, String name, String brand, String category, BigDecimal price, Integer quantity, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.productId = productId;
+        this.storeId = storeId;
         this.name = name;
         this.brand = brand;
         this.category = category;
@@ -70,6 +74,14 @@ public class ProductEntity {
 
     public void setProductId(String productId) {
         this.productId = productId;
+    }
+
+    public String getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
     }
 
     public String getName() {

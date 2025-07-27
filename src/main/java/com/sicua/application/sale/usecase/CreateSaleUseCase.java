@@ -9,6 +9,7 @@ import com.sicua.domain.sale.entity.SaleItem;
 import com.sicua.domain.sale.repository.SaleRepository;
 import com.sicua.domain.sale.service.SaleDomainService;
 import com.sicua.domain.sale.valueobject.SaleId;
+import com.sicua.application.auth.SessionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -27,10 +28,12 @@ public class CreateSaleUseCase {
     
     private final SaleRepository saleRepository;
     private final SaleDomainService saleDomainService;
+    private final SessionService sessionService;
     
-    public CreateSaleUseCase(SaleRepository saleRepository, SaleDomainService saleDomainService) {
+    public CreateSaleUseCase(SaleRepository saleRepository, SaleDomainService saleDomainService, SessionService sessionService) {
         this.saleRepository = saleRepository;
         this.saleDomainService = saleDomainService;
+        this.sessionService = sessionService;
     }
     
     @Transactional
@@ -44,6 +47,7 @@ public class CreateSaleUseCase {
             
             Sale sale = new Sale(
                     SaleId.generate(),
+                    sessionService.getCurrentStoreId(),
                     request.getClientDni(),
                     request.getClientName(),
                     saleItems

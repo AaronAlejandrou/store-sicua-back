@@ -22,6 +22,23 @@ public class StoreConfigRepositoryImpl implements StoreConfigRepository {
     }
     
     @Override
+    public Optional<StoreConfig> findById(String id) {
+        return jpaRepository.findById(id)
+                .map(this::toDomain);
+    }
+    
+    @Override
+    public Optional<StoreConfig> findByEmail(String email) {
+        return jpaRepository.findByEmail(email)
+                .map(this::toDomain);
+    }
+    
+    @Override
+    public boolean existsByEmail(String email) {
+        return jpaRepository.existsByEmail(email);
+    }
+    
+    @Override
     public StoreConfig save(StoreConfig storeConfig) {
         StoreConfigEntity entity = toEntity(storeConfig);
         StoreConfigEntity savedEntity = jpaRepository.save(entity);
@@ -35,6 +52,22 @@ public class StoreConfigRepositoryImpl implements StoreConfigRepository {
                 entity.getEmail(),
                 entity.getPhone()
         );
+        // Set the ID and password manually since constructor doesn't include them
+        try {
+            java.lang.reflect.Field idField = StoreConfig.class.getDeclaredField("id");
+            idField.setAccessible(true);
+            idField.set(config, entity.getId());
+            
+            java.lang.reflect.Field passwordField = StoreConfig.class.getDeclaredField("password");
+            passwordField.setAccessible(true);
+            passwordField.set(config, entity.getPassword());
+            
+            java.lang.reflect.Field createdAtField = StoreConfig.class.getDeclaredField("createdAt");
+            createdAtField.setAccessible(true);
+            createdAtField.set(config, entity.getCreatedAt());
+        } catch (Exception e) {
+            throw new RuntimeException("Error mapping entity to domain", e);
+        }
         return config;
     }
     
@@ -45,6 +78,8 @@ public class StoreConfigRepositoryImpl implements StoreConfigRepository {
                 storeConfig.getAddress(),
                 storeConfig.getEmail(),
                 storeConfig.getPhone(),
+                storeConfig.getPassword(),
+                storeConfig.getCreatedAt(),
                 storeConfig.getUpdatedAt()
         );
     }

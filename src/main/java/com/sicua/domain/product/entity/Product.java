@@ -11,6 +11,7 @@ import java.util.Objects;
  */
 public class Product {
     private ProductId productId;
+    private String storeId;
     private String name;
     private String brand;
     private String category;
@@ -23,8 +24,9 @@ public class Product {
         // For frameworks
     }
 
-    public Product(ProductId productId, String name, String brand, String category, BigDecimal price, Integer quantity) {
+    public Product(ProductId productId, String storeId, String name, String brand, String category, BigDecimal price, Integer quantity) {
         this.productId = Objects.requireNonNull(productId, "Product ID cannot be null");
+        this.storeId = Objects.requireNonNull(storeId, "Store ID cannot be null");
         this.name = Objects.requireNonNull(name, "Product name cannot be null");
         this.brand = brand;
         this.category = category;
@@ -79,6 +81,10 @@ public class Product {
     // Getters
     public ProductId getProductId() {
         return productId;
+    }
+
+    public String getStoreId() {
+        return storeId;
     }
 
     public String getName() {

@@ -5,6 +5,7 @@ import com.sicua.domain.product.repository.ProductRepository;
 import com.sicua.domain.product.valueobject.ProductId;
 import com.sicua.domain.sale.entity.Sale;
 import com.sicua.domain.sale.entity.SaleItem;
+import com.sicua.application.auth.SessionService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,9 +19,11 @@ import java.util.stream.Collectors;
 public class SaleDomainService {
     
     private final ProductRepository productRepository;
+    private final SessionService sessionService;
     
-    public SaleDomainService(ProductRepository productRepository) {
+    public SaleDomainService(ProductRepository productRepository, SessionService sessionService) {
         this.productRepository = productRepository;
+        this.sessionService = sessionService;
     }
     
     /**
@@ -29,6 +32,7 @@ public class SaleDomainService {
      * @return true if all items have enough stock
      */
     public boolean validateStockAvailability(Sale sale) {
+        String storeId = sessionService.getCurrentStoreId();
         Map<ProductId, Integer> requiredQuantities = sale.getItems().stream()
                 .collect(Collectors.groupingBy(
                         SaleItem::getProductId,
@@ -36,7 +40,7 @@ public class SaleDomainService {
                 ));
         
         for (Map.Entry<ProductId, Integer> entry : requiredQuantities.entrySet()) {
-            Product product = productRepository.findById(entry.getKey())
+            Product product = productRepository.findByIdAndStoreId(entry.getKey(), storeId)
                     .orElseThrow(() -> new IllegalArgumentException("Product not found: " + entry.getKey()));
             
             if (!product.hasEnoughStock(entry.getValue())) {
@@ -52,6 +56,7 @@ public class SaleDomainService {
      * @param sale the sale containing items to reduce stock for
      */
     public void reduceStockForSale(Sale sale) {
+        String storeId = sessionService.getCurrentStoreId();
         Map<ProductId, Integer> quantitiesToReduce = sale.getItems().stream()
                 .collect(Collectors.groupingBy(
                         SaleItem::getProductId,
@@ -59,7 +64,7 @@ public class SaleDomainService {
                 ));
         
         for (Map.Entry<ProductId, Integer> entry : quantitiesToReduce.entrySet()) {
-            Product product = productRepository.findById(entry.getKey())
+            Product product = productRepository.findByIdAndStoreId(entry.getKey(), storeId)
                     .orElseThrow(() -> new IllegalArgumentException("Product not found: " + entry.getKey()));
             
             product.reduceStock(entry.getValue());

@@ -5,6 +5,7 @@ import com.sicua.application.product.dto.UpdateProductRequest;
 import com.sicua.domain.product.entity.Product;
 import com.sicua.domain.product.repository.ProductRepository;
 import com.sicua.domain.product.valueobject.ProductId;
+import com.sicua.application.auth.SessionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -19,9 +20,11 @@ public class UpdateProductUseCase {
     private static final Logger logger = LoggerFactory.getLogger(UpdateProductUseCase.class);
     
     private final ProductRepository productRepository;
+    private final SessionService sessionService;
     
-    public UpdateProductUseCase(ProductRepository productRepository) {
+    public UpdateProductUseCase(ProductRepository productRepository, SessionService sessionService) {
         this.productRepository = productRepository;
+        this.sessionService = sessionService;
     }
     
     @Transactional
@@ -30,8 +33,9 @@ public class UpdateProductUseCase {
         
         try {
             ProductId id = ProductId.of(productId);
+            String storeId = sessionService.getCurrentStoreId();
             
-            Product product = productRepository.findById(id)
+            Product product = productRepository.findByIdAndStoreId(id, storeId)
                     .orElseThrow(() -> new IllegalArgumentException("Product not found with ID: " + productId));
             
             product.updateProduct(

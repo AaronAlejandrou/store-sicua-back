@@ -13,6 +13,7 @@ import java.util.Objects;
  */
 public class Sale {
     private SaleId id;
+    private String storeId;
     private String clientDni;
     private String clientName;
     private LocalDateTime date;
@@ -25,8 +26,9 @@ public class Sale {
         // For frameworks
     }
 
-    public Sale(SaleId id, String clientDni, String clientName, List<SaleItem> items) {
+    public Sale(SaleId id, String storeId, String clientDni, String clientName, List<SaleItem> items) {
         this.id = Objects.requireNonNull(id, "Sale ID cannot be null");
+        this.storeId = Objects.requireNonNull(storeId, "Store ID cannot be null");
         this.clientDni = clientDni;
         this.clientName = clientName;
         this.date = LocalDateTime.now();
@@ -66,6 +68,10 @@ public class Sale {
     // Getters
     public SaleId getId() {
         return id;
+    }
+
+    public String getStoreId() {
+        return storeId;
     }
 
     public String getClientDni() {
