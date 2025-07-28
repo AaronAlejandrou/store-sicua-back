@@ -81,6 +81,8 @@ public class AuthController {
     })
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request, HttpSession session) {
         logger.info("POST /api/auth/login - Login attempt for email: {}", request.getEmail());
+        logger.info("Session ID before login: {}", session.getId());
+        logger.info("Session is new: {}", session.isNew());
         
         StoreConfig storeConfig = storeConfigRepository.findByEmail(request.getEmail())
             .orElseThrow(() -> new IllegalArgumentException("Credenciales inválidas"));
@@ -93,6 +95,8 @@ public class AuthController {
         session.setAttribute(SESSION_STORE_ID, storeConfig.getId());
         
         logger.info("Login successful for store: {}", storeConfig.getName());
+        logger.info("Session ID after login: {}", session.getId());
+        logger.info("Store ID stored in session: {}", session.getAttribute(SESSION_STORE_ID));
         
         return ResponseEntity.ok(new AuthResponse(
             storeConfig.getId(),
