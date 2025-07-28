@@ -3,6 +3,8 @@ package com.sicua.domain.storeconfig.service;
 import com.sicua.application.auth.SessionService;
 import com.sicua.domain.storeconfig.entity.StoreConfig;
 import com.sicua.domain.storeconfig.repository.StoreConfigRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -10,6 +12,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class StoreConfigDomainService {
+    
+    private static final Logger logger = LoggerFactory.getLogger(StoreConfigDomainService.class);
     
     private final StoreConfigRepository storeConfigRepository;
     private final SessionService sessionService;
@@ -24,9 +28,21 @@ public class StoreConfigDomainService {
      * @return the current user's store configuration
      */
     public StoreConfig ensureStoreConfigExists() {
-        String storeId = sessionService.getCurrentStoreId();
-        return storeConfigRepository.findById(storeId)
-                .orElseThrow(() -> new IllegalStateException("Store configuration not found for current user"));
+        logger.info("ensureStoreConfigExists() called");
+        
+        try {
+            String storeId = sessionService.getCurrentStoreId();
+            logger.info("Current store ID from session: {}", storeId);
+            
+            return storeConfigRepository.findById(storeId)
+                    .orElseThrow(() -> {
+                        logger.error("Store configuration not found for storeId: {}", storeId);
+                        return new IllegalStateException("Store configuration not found for current user. StoreId: " + storeId);
+                    });
+        } catch (Exception e) {
+            logger.error("Error in ensureStoreConfigExists(): {}", e.getMessage(), e);
+            throw e;
+        }
     }
     
     /**
