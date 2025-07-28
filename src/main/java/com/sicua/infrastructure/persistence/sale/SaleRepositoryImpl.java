@@ -94,6 +94,10 @@ public class SaleRepositoryImpl implements SaleRepository {
                 items
         );
         
+        // Set the original dates from the entity
+        sale.setDate(entity.getDate());
+        sale.setCreatedAt(entity.getCreatedAt());
+        
         if (entity.getInvoiced()) {
             sale.markAsInvoiced();
         }

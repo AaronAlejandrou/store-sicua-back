@@ -101,6 +101,15 @@ public class Sale {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
+    
+    // Public setters for repository use (used when loading from database)
+    public void setDate(LocalDateTime date) {
+        this.date = date;
+    }
+    
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 
     @Override
     public boolean equals(Object o) {
