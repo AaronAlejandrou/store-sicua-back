@@ -91,11 +91,6 @@ class ProductTest {
                 new BigDecimal("99.99"),
                 5
         );
-                "Test Product",
-                "Electronics",
-                new BigDecimal("99.99"),
-                5
-        );
 
         // Act & Assert
         assertThrows(IllegalStateException.class, () -> {
