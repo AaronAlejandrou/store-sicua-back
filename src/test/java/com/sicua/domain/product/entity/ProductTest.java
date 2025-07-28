@@ -13,17 +13,21 @@ class ProductTest {
     void constructor_ValidData_CreatesProduct() {
         // Arrange
         ProductId productId = ProductId.generate();
+        String storeId = "test-store";
         String name = "Test Product";
+        String brand = "Test Brand";
         String category = "Electronics";
         BigDecimal price = new BigDecimal("99.99");
         Integer quantity = 10;
 
         // Act
-        Product product = new Product(productId, name, category, price, quantity);
+        Product product = new Product(productId, storeId, name, brand, category, price, quantity);
 
         // Assert
         assertEquals(productId, product.getProductId());
+        assertEquals(storeId, product.getStoreId());
         assertEquals(name, product.getName());
+        assertEquals(brand, product.getBrand());
         assertEquals(category, product.getCategory());
         assertEquals(price, product.getPrice());
         assertEquals(quantity, product.getQuantity());
@@ -35,7 +39,7 @@ class ProductTest {
     void constructor_NullProductId_ThrowsException() {
         // Arrange & Act & Assert
         assertThrows(NullPointerException.class, () -> {
-            new Product(null, "Test Product", "Electronics", new BigDecimal("99.99"), 10);
+            new Product(null, "test-store", "Test Product", "Test Brand", "Electronics", new BigDecimal("99.99"), 10);
         });
     }
 
@@ -43,7 +47,7 @@ class ProductTest {
     void constructor_NegativePrice_ThrowsException() {
         // Arrange & Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            new Product(ProductId.generate(), "Test Product", "Electronics", new BigDecimal("-10.00"), 10);
+            new Product(ProductId.generate(), "test-store", "Test Product", "Test Brand", "Electronics", new BigDecimal("-10.00"), 10);
         });
     }
 
@@ -51,7 +55,7 @@ class ProductTest {
     void constructor_NegativeQuantity_ThrowsException() {
         // Arrange & Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            new Product(ProductId.generate(), "Test Product", "Electronics", new BigDecimal("99.99"), -5);
+            new Product(ProductId.generate(), "test-store", "Test Product", "Test Brand", "Electronics", new BigDecimal("99.99"), -5);
         });
     }
 
@@ -60,7 +64,9 @@ class ProductTest {
         // Arrange
         Product product = new Product(
                 ProductId.generate(),
+                "test-store",
                 "Test Product",
+                "Test Brand",
                 "Electronics",
                 new BigDecimal("99.99"),
                 10
@@ -78,6 +84,13 @@ class ProductTest {
         // Arrange
         Product product = new Product(
                 ProductId.generate(),
+                "test-store",
+                "Test Product",
+                "Test Brand",
+                "Electronics",
+                new BigDecimal("99.99"),
+                5
+        );
                 "Test Product",
                 "Electronics",
                 new BigDecimal("99.99"),
@@ -95,7 +108,9 @@ class ProductTest {
         // Arrange
         Product product = new Product(
                 ProductId.generate(),
+                "test-store",
                 "Test Product",
+                "Test Brand",
                 "Electronics",
                 new BigDecimal("99.99"),
                 10
@@ -111,7 +126,9 @@ class ProductTest {
         // Arrange
         Product product = new Product(
                 ProductId.generate(),
+                "test-store",
                 "Test Product",
+                "Test Brand",
                 "Electronics",
                 new BigDecimal("99.99"),
                 5
@@ -126,17 +143,20 @@ class ProductTest {
         // Arrange
         Product product = new Product(
                 ProductId.generate(),
+                "test-store",
                 "Original Product",
+                "Original Brand",
                 "Original Category",
                 new BigDecimal("50.00"),
                 5
         );
 
         // Act
-        product.updateProduct("Updated Product", "Updated Category", new BigDecimal("75.00"), 15);
+        product.updateProduct("Updated Product", "Updated Brand", "Updated Category", new BigDecimal("75.00"), 15);
 
         // Assert
         assertEquals("Updated Product", product.getName());
+        assertEquals("Updated Brand", product.getBrand());
         assertEquals("Updated Category", product.getCategory());
         assertEquals(new BigDecimal("75.00"), product.getPrice());
         assertEquals(15, product.getQuantity());
