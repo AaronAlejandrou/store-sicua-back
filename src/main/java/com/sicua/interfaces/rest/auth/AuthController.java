@@ -149,4 +149,45 @@ public class AuthController {
             "Sesión activa"
         ));
     }
+    
+    @PostMapping("/forgot-password")
+    @Operation(summary = "Verificar email para recuperación", description = "Verifica si el email existe para permitir la recuperación de contraseña")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Email encontrado, puede proceder con el cambio de contraseña"),
+        @ApiResponse(responseCode = "404", description = "Email no encontrado",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<String> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        logger.info("POST /api/auth/forgot-password - Verifying email: {}", request.getEmail());
+        
+        // Check if email exists
+        if (!storeConfigRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("No se encontró una tienda con este email");
+        }
+        
+        logger.info("Email found for password recovery: {}", request.getEmail());
+        return ResponseEntity.ok("Email verificado. Puede proceder con el cambio de contraseña.");
+    }
+    
+    @PostMapping("/reset-password")
+    @Operation(summary = "Cambiar contraseña", description = "Cambia la contraseña de la tienda usando el email verificado")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Contraseña cambiada exitosamente"),
+        @ApiResponse(responseCode = "404", description = "Email no encontrado",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        logger.info("POST /api/auth/reset-password - Resetting password for email: {}", request.getEmail());
+        
+        // Find store by email
+        StoreConfig storeConfig = storeConfigRepository.findByEmail(request.getEmail())
+            .orElseThrow(() -> new IllegalArgumentException("No se encontró una tienda con este email"));
+        
+        // Update password
+        storeConfig.setPassword(request.getNewPassword());
+        storeConfigRepository.save(storeConfig);
+        
+        logger.info("Password successfully reset for store: {}", storeConfig.getName());
+        return ResponseEntity.ok("Contraseña cambiada exitosamente");
+    }
 }
