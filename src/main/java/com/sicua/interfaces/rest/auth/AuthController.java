@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -40,7 +41,7 @@ public class AuthController {
         @ApiResponse(responseCode = "400", description = "Datos inválidos o email ya existe", 
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request, HttpSession session) {
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request, HttpSession session, HttpServletResponse response) {
         logger.info("POST /api/auth/register - Register store with email: {}", request.getEmail());
         
         // Check if email already exists
@@ -62,7 +63,12 @@ public class AuthController {
         // Store in session
         session.setAttribute(SESSION_STORE_ID, storeConfig.getId());
         
+        // Manually set cookie header to ensure cross-origin compatibility
+        String cookieValue = String.format("JSESSIONID=%s; Path=/api; SameSite=None; Secure=false", session.getId());
+        response.addHeader("Set-Cookie", cookieValue);
+        
         logger.info("Store registered successfully with ID: {}", storeConfig.getId());
+        logger.info("Manual cookie header set: {}", cookieValue);
         
         return ResponseEntity.ok(new AuthResponse(
             storeConfig.getId(),
@@ -79,7 +85,7 @@ public class AuthController {
         @ApiResponse(responseCode = "401", description = "Credenciales inválidas",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request, HttpSession session) {
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request, HttpSession session, HttpServletResponse response) {
         logger.info("POST /api/auth/login - Login attempt for email: {}", request.getEmail());
         logger.info("Session ID before login: {}", session.getId());
         logger.info("Session is new: {}", session.isNew());
@@ -94,9 +100,14 @@ public class AuthController {
         // Store in session
         session.setAttribute(SESSION_STORE_ID, storeConfig.getId());
         
+        // Manually set cookie header to ensure cross-origin compatibility
+        String cookieValue = String.format("JSESSIONID=%s; Path=/api; SameSite=None; Secure=false", session.getId());
+        response.addHeader("Set-Cookie", cookieValue);
+        
         logger.info("Login successful for store: {}", storeConfig.getName());
         logger.info("Session ID after login: {}", session.getId());
         logger.info("Store ID stored in session: {}", session.getAttribute(SESSION_STORE_ID));
+        logger.info("Manual cookie header set: {}", cookieValue);
         
         return ResponseEntity.ok(new AuthResponse(
             storeConfig.getId(),
