@@ -1,5 +1,6 @@
 package com.sicua.application.product.usecase;
 
+import com.sicua.application.auth.SessionService;
 import com.sicua.application.product.dto.CreateProductRequest;
 import com.sicua.application.product.dto.ProductResponse;
 import com.sicua.domain.product.entity.Product;
@@ -20,28 +21,37 @@ class CreateProductUseCaseTest {
 
     @Mock
     private ProductRepository productRepository;
+    
+    @Mock
+    private SessionService sessionService;
 
     private CreateProductUseCase createProductUseCase;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        createProductUseCase = new CreateProductUseCase(productRepository);
+        createProductUseCase = new CreateProductUseCase(productRepository, sessionService);
     }
 
     @Test
     void execute_ValidRequest_ReturnsProductResponse() {
         // Arrange
         CreateProductRequest request = new CreateProductRequest(
+                "P001",
                 "Test Product",
+                "Test Brand",
                 "Electronics",
                 new BigDecimal("99.99"),
                 10
         );
 
+        when(sessionService.getCurrentStoreId()).thenReturn("test-store");
+
         Product savedProduct = new Product(
                 ProductId.generate(),
+                "test-store",
                 "Test Product",
+                "Test Brand",
                 "Electronics",
                 new BigDecimal("99.99"),
                 10
@@ -66,12 +76,15 @@ class CreateProductUseCaseTest {
     void execute_RepositoryThrowsException_ThrowsRuntimeException() {
         // Arrange
         CreateProductRequest request = new CreateProductRequest(
+                "P002",
                 "Test Product",
+                "Test Brand",
                 "Electronics",
                 new BigDecimal("99.99"),
                 10
         );
 
+        when(sessionService.getCurrentStoreId()).thenReturn("test-store");
         when(productRepository.save(any(Product.class))).thenThrow(new RuntimeException("Database error"));
 
         // Act & Assert
