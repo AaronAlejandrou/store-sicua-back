@@ -29,7 +29,12 @@ public class DeleteProductUseCase {
     
     @Transactional
     public void execute(String productId) {
-        logger.info("Deleting product with ID: {}", productId);
+        execute(productId, false);
+    }
+    
+    @Transactional
+    public void execute(String productId, boolean force) {
+        logger.info("Deleting product with ID: {} (force: {})", productId, force);
         
         try {
             ProductId id = ProductId.of(productId);
@@ -39,9 +44,8 @@ public class DeleteProductUseCase {
                 throw new IllegalArgumentException("Product not found with ID: " + productId);
             }
             
-            // Business rule: Only allow deletion if product has no stock
-            // This is a simplified rule - in real scenarios you might check for pending orders, etc.
-            if (!productDomainService.canDeleteProduct(id)) {
+            // Business rule: Only allow deletion if product has no stock OR if force is true
+            if (!force && !productDomainService.canDeleteProduct(id)) {
                 throw new IllegalStateException("Cannot delete product with existing stock");
             }
             

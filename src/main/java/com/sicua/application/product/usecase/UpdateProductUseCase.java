@@ -41,7 +41,8 @@ public class UpdateProductUseCase {
             product.updateProduct(
                     request.getName(),
                     request.getBrand(),
-                    request.getCategory(),
+                    request.getCategoryNumber(),
+                    request.getSize(),
                     request.getPrice(),
                     request.getQuantity()
             );
@@ -66,7 +67,8 @@ public class UpdateProductUseCase {
                 product.getProductId().getValue(),
                 product.getName(),
                 product.getBrand(),
-                product.getCategory(),
+                product.getCategoryNumber(),
+                product.getSize(),
                 product.getPrice(),
                 product.getQuantity(),
                 product.getCreatedAt(),

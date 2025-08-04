@@ -182,10 +182,12 @@ public class ProductController {
     })
     public ResponseEntity<Void> deleteProduct(
             @Parameter(description = "ID del producto a eliminar", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
-            @PathVariable String id) {
-        logger.info("DELETE /api/products/{} - Delete product", id);
+            @PathVariable String id,
+            @Parameter(description = "Force deletion even with stock", required = false)
+            @RequestParam(value = "force", required = false, defaultValue = "false") boolean force) {
+        logger.info("DELETE /api/products/{} - Delete product (force: {})", id, force);
         
-        deleteProductUseCase.execute(id);
+        deleteProductUseCase.execute(id, force);
         return ResponseEntity.noContent().build();
     }
 }

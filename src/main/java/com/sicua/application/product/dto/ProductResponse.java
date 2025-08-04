@@ -17,8 +17,11 @@ public class ProductResponse {
     @Schema(description = "Marca del producto", example = "Ralph Lauren")
     private String brand;
     
-    @Schema(description = "Categoría del producto (sexo - tipo prenda)", example = "Hombre - Camiseta")
-    private String category;
+    @Schema(description = "Número de categoría del producto", example = "1")
+    private Integer categoryNumber;
+    
+    @Schema(description = "Talla del producto", example = "M")
+    private String size;
     
     @Schema(description = "Precio del producto", example = "1299.99")
     private BigDecimal price;
@@ -34,12 +37,13 @@ public class ProductResponse {
 
     public ProductResponse() {}
 
-    public ProductResponse(String productId, String name, String brand, String category, BigDecimal price, 
+    public ProductResponse(String productId, String name, String brand, Integer categoryNumber, String size, BigDecimal price, 
                           Integer quantity, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.productId = productId;
         this.name = name;
         this.brand = brand;
-        this.category = category;
+        this.categoryNumber = categoryNumber;
+        this.size = size;
         this.price = price;
         this.quantity = quantity;
         this.createdAt = createdAt;
@@ -71,12 +75,20 @@ public class ProductResponse {
         this.brand = brand;
     }
 
-    public String getCategory() {
-        return category;
+    public Integer getCategoryNumber() {
+        return categoryNumber;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategoryNumber(Integer categoryNumber) {
+        this.categoryNumber = categoryNumber;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
     }
 
     public BigDecimal getPrice() {

@@ -14,7 +14,9 @@ public class UpdateProductRequest {
     
     private String brand;
     
-    private String category;
+    private Integer categoryNumber;
+    
+    private String size;
     
     @NotNull(message = "Price is required")
     @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0")
@@ -26,10 +28,11 @@ public class UpdateProductRequest {
 
     public UpdateProductRequest() {}
 
-    public UpdateProductRequest(String name, String brand, String category, BigDecimal price, Integer quantity) {
+    public UpdateProductRequest(String name, String brand, Integer categoryNumber, String size, BigDecimal price, Integer quantity) {
         this.name = name;
         this.brand = brand;
-        this.category = category;
+        this.categoryNumber = categoryNumber;
+        this.size = size;
         this.price = price;
         this.quantity = quantity;
     }
@@ -51,12 +54,20 @@ public class UpdateProductRequest {
         this.brand = brand;
     }
 
-    public String getCategory() {
-        return category;
+    public Integer getCategoryNumber() {
+        return categoryNumber;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategoryNumber(Integer categoryNumber) {
+        this.categoryNumber = categoryNumber;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
     }
 
     public BigDecimal getPrice() {

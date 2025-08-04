@@ -3,23 +3,6 @@ CREATE DATABASE IF NOT EXISTS sicua_db;
 
 USE sicua_db;
 
--- Products table (linked to store owner)
-CREATE TABLE IF NOT EXISTS products (
-    product_id VARCHAR(36) PRIMARY KEY,
-    store_id VARCHAR(36) NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    brand VARCHAR(255),
-    category VARCHAR(100),
-    price DECIMAL(10,2) NOT NULL,
-    quantity INTEGER NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_product_store_id (store_id),
-    INDEX idx_product_name (name),
-    INDEX idx_product_category (category),
-    FOREIGN KEY (store_id) REFERENCES store_config(id) ON DELETE CASCADE
-);
-
 -- Store configuration table (serves as user table)
 CREATE TABLE IF NOT EXISTS store_config (
     id VARCHAR(36) PRIMARY KEY,
@@ -31,6 +14,41 @@ CREATE TABLE IF NOT EXISTS store_config (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_store_email (email)
+);
+
+-- Categories table (linked to store owner)
+CREATE TABLE IF NOT EXISTS categories (
+    category_id VARCHAR(36) PRIMARY KEY,
+    store_id VARCHAR(36) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    category_number INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_category_store_id (store_id),
+    INDEX idx_category_number (category_number),
+    INDEX idx_category_name (name),
+    UNIQUE KEY uk_category_store_number (store_id, category_number),
+    UNIQUE KEY uk_category_store_name (store_id, name),
+    FOREIGN KEY (store_id) REFERENCES store_config(id) ON DELETE CASCADE
+);
+
+-- Products table (linked to store owner)
+CREATE TABLE IF NOT EXISTS products (
+    product_id VARCHAR(36) PRIMARY KEY,
+    store_id VARCHAR(36) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    brand VARCHAR(255),
+    category_number INTEGER,
+    size VARCHAR(50),
+    price DECIMAL(10,2) NOT NULL,
+    quantity INTEGER NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_product_store_id (store_id),
+    INDEX idx_product_name (name),
+    INDEX idx_product_category_number (category_number),
+    INDEX idx_product_size (size),
+    FOREIGN KEY (store_id) REFERENCES store_config(id) ON DELETE CASCADE
 );
 
 -- Sales table (linked to store owner)
@@ -62,9 +80,4 @@ CREATE TABLE IF NOT EXISTS sale_items (
     INDEX idx_sale_item_sale_id (sale_id),
     INDEX idx_sale_item_product_id (product_id),
     FOREIGN KEY (sale_id) REFERENCES sales(id) ON DELETE CASCADE
-);
-    subtotal DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (sale_id) REFERENCES sales(id) ON DELETE CASCADE,
-    INDEX idx_sale_item_sale_id (sale_id),
-    INDEX idx_sale_item_product_id (product_id)
 );

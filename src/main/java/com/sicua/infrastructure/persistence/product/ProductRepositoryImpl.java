@@ -59,7 +59,8 @@ public class ProductRepositoryImpl implements ProductRepository {
                 entity.getStoreId(),
                 entity.getName(),
                 entity.getBrand(),
-                entity.getCategory(),
+                entity.getCategoryNumber(),
+                entity.getSize(),
                 entity.getPrice(),
                 entity.getQuantity()
         );
@@ -72,7 +73,8 @@ public class ProductRepositoryImpl implements ProductRepository {
                 product.getStoreId(),
                 product.getName(),
                 product.getBrand(),
-                product.getCategory(),
+                product.getCategoryNumber(),
+                product.getSize(),
                 product.getPrice(),
                 product.getQuantity(),
                 product.getCreatedAt(),

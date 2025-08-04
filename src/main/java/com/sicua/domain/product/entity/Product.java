@@ -14,7 +14,8 @@ public class Product {
     private String storeId;
     private String name;
     private String brand;
-    private String category;
+    private Integer categoryNumber;
+    private String size;
     private BigDecimal price;
     private Integer quantity;
     private LocalDateTime createdAt;
@@ -24,12 +25,13 @@ public class Product {
         // For frameworks
     }
 
-    public Product(ProductId productId, String storeId, String name, String brand, String category, BigDecimal price, Integer quantity) {
+    public Product(ProductId productId, String storeId, String name, String brand, Integer categoryNumber, String size, BigDecimal price, Integer quantity) {
         this.productId = Objects.requireNonNull(productId, "Product ID cannot be null");
         this.storeId = Objects.requireNonNull(storeId, "Store ID cannot be null");
         this.name = Objects.requireNonNull(name, "Product name cannot be null");
         this.brand = brand;
-        this.category = category;
+        this.categoryNumber = categoryNumber;
+        this.size = size;
         this.price = Objects.requireNonNull(price, "Product price cannot be null");
         this.quantity = Objects.requireNonNull(quantity, "Product quantity cannot be null");
         this.createdAt = LocalDateTime.now();
@@ -37,18 +39,25 @@ public class Product {
         
         validatePrice();
         validateQuantity();
+        if (categoryNumber != null) {
+            validateCategoryNumber();
+        }
     }
 
-    public void updateProduct(String name, String brand, String category, BigDecimal price, Integer quantity) {
+    public void updateProduct(String name, String brand, Integer categoryNumber, String size, BigDecimal price, Integer quantity) {
         this.name = Objects.requireNonNull(name, "Product name cannot be null");
         this.brand = brand;
-        this.category = category;
+        this.categoryNumber = categoryNumber;
+        this.size = size;
         this.price = Objects.requireNonNull(price, "Product price cannot be null");
         this.quantity = Objects.requireNonNull(quantity, "Product quantity cannot be null");
         this.updatedAt = LocalDateTime.now();
         
         validatePrice();
         validateQuantity();
+        if (categoryNumber != null) {
+            validateCategoryNumber();
+        }
     }
 
     public void reduceStock(Integer quantityToReduce) {
@@ -78,6 +87,12 @@ public class Product {
         }
     }
 
+    private void validateCategoryNumber() {
+        if (categoryNumber != null && categoryNumber <= 0) {
+            throw new IllegalArgumentException("Category number must be positive");
+        }
+    }
+
     // Getters
     public ProductId getProductId() {
         return productId;
@@ -95,8 +110,12 @@ public class Product {
         return brand;
     }
 
-    public String getCategory() {
-        return category;
+    public Integer getCategoryNumber() {
+        return categoryNumber;
+    }
+
+    public String getSize() {
+        return size;
     }
 
     public BigDecimal getPrice() {
