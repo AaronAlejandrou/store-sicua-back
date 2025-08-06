@@ -57,11 +57,13 @@ public class SaleEntity {
 
     @PrePersist
     protected void onCreate() {
+        // Use system local time - no timezone conversion
+        LocalDateTime currentTime = LocalDateTime.now();
         if (createdAt == null) {
-            createdAt = LocalDateTime.now();
+            createdAt = currentTime;
         }
         if (date == null) {
-            date = LocalDateTime.now();
+            date = currentTime;
         }
         if (invoiced == null) {
             invoiced = false;

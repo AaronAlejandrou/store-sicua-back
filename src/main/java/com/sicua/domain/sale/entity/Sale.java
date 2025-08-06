@@ -31,10 +31,13 @@ public class Sale {
         this.storeId = Objects.requireNonNull(storeId, "Store ID cannot be null");
         this.clientDni = clientDni;
         this.clientName = clientName;
-        this.date = LocalDateTime.now();
+        
+        // Use system local time - no timezone conversion
+        LocalDateTime currentTime = LocalDateTime.now();
+        this.date = currentTime;
         this.items = new ArrayList<>(Objects.requireNonNull(items, "Sale items cannot be null"));
         this.invoiced = false;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = currentTime;
         
         validateItems();
         calculateTotal();

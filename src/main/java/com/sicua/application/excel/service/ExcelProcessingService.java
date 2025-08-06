@@ -322,42 +322,18 @@ public class ExcelProcessingService {
     }
     
     private void addSampleData(Sheet sheet, Workbook workbook) {
-        CellStyle dataStyle = createDataStyle(workbook);
+        // No style for sample data (no borders)
         
         // Sample row 1
         Row row1 = sheet.createRow(1);
-        createCell(row1, COL_PRODUCTO_ID, "PROD-001", dataStyle);
-        createCell(row1, COL_NOMBRE, "Camisa Polo", dataStyle);
-        createCell(row1, COL_PRECIO, new BigDecimal("25000"), dataStyle);
-        createCell(row1, COL_TALLA, "M", dataStyle);
-        createCell(row1, COL_COLOR, "Azul", dataStyle);
-        createCell(row1, COL_CATEGORIA_NUMERO, 1, dataStyle);
-        createCell(row1, COL_CATEGORIA_NOMBRE, "Camisas", dataStyle);
-        createCell(row1, COL_STOCK, 10, dataStyle);
-        createCell(row1, COL_MARCA, "Nike", dataStyle);
-        
-        // Sample row 2
-        Row row2 = sheet.createRow(2);
-        createCell(row2, COL_PRODUCTO_ID, "PROD-002", dataStyle);
-        createCell(row2, COL_NOMBRE, "Pantalón Jeans", dataStyle);
-        createCell(row2, COL_PRECIO, new BigDecimal("45000"), dataStyle);
-        createCell(row2, COL_TALLA, "32", dataStyle);
-        createCell(row2, COL_COLOR, "Negro", dataStyle);
-        createCell(row2, COL_CATEGORIA_NUMERO, 2, dataStyle);
-        createCell(row2, COL_CATEGORIA_NOMBRE, "Pantalones", dataStyle);
-        createCell(row2, COL_STOCK, 5, dataStyle);
-        createCell(row2, COL_MARCA, "Levi's", dataStyle);
-        
-        // Sample row 3 - existing category
-        Row row3 = sheet.createRow(3);
-        createCell(row3, COL_PRODUCTO_ID, "PROD-003", dataStyle);
-        createCell(row3, COL_NOMBRE, "Camisa Formal", dataStyle);
-        createCell(row3, COL_PRECIO, new BigDecimal("35000"), dataStyle);
-        createCell(row3, COL_TALLA, "L", dataStyle);
-        createCell(row3, COL_COLOR, "Blanco", dataStyle);
-        createCell(row3, COL_CATEGORIA_NUMERO, 1, dataStyle);
-        createCell(row3, COL_CATEGORIA_NOMBRE, "", dataStyle); // Empty - will use existing
-        createCell(row3, COL_STOCK, 8, dataStyle);
-        createCell(row3, COL_MARCA, "Hugo Boss", dataStyle);
+        createCell(row1, COL_PRODUCTO_ID, "EXAMPLE-001", null);
+        createCell(row1, COL_NOMBRE, "Nombre Ejemplo", null);
+        createCell(row1, COL_PRECIO, new BigDecimal("99.99"), null);
+        createCell(row1, COL_TALLA, "XL o 32 o G", null);
+        createCell(row1, COL_COLOR, "Ejemplo Color", null);
+        createCell(row1, COL_CATEGORIA_NUMERO, 9999, null);
+        createCell(row1, COL_CATEGORIA_NOMBRE, "Ejemplo Categoria", null);
+        createCell(row1, COL_STOCK, 9999, null);
+        createCell(row1, COL_MARCA, "Ejemplo Marca", null);
     }
 }

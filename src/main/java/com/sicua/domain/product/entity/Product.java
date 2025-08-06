@@ -4,6 +4,8 @@ import com.sicua.domain.product.valueobject.ProductId;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 /**
@@ -34,8 +36,33 @@ public class Product {
         this.size = size;
         this.price = Objects.requireNonNull(price, "Product price cannot be null");
         this.quantity = Objects.requireNonNull(quantity, "Product quantity cannot be null");
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        
+        // Use system local time - no timezone conversion
+        LocalDateTime currentTime = LocalDateTime.now();
+        this.createdAt = currentTime;
+        this.updatedAt = currentTime;
+        
+        validatePrice();
+        validateQuantity();
+        if (categoryNumber != null) {
+            validateCategoryNumber();
+        }
+    }
+
+    // Constructor for creating Product from existing data (e.g., from database)
+    public Product(ProductId productId, String storeId, String name, String brand, Integer categoryNumber, String size, BigDecimal price, Integer quantity, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.productId = Objects.requireNonNull(productId, "Product ID cannot be null");
+        this.storeId = Objects.requireNonNull(storeId, "Store ID cannot be null");
+        this.name = Objects.requireNonNull(name, "Product name cannot be null");
+        this.brand = brand;
+        this.categoryNumber = categoryNumber;
+        this.size = size;
+        this.price = Objects.requireNonNull(price, "Product price cannot be null");
+        this.quantity = Objects.requireNonNull(quantity, "Product quantity cannot be null");
+        // Use Peru timezone (UTC-5) for proper local time
+        LocalDateTime peruTime = ZonedDateTime.now(ZoneId.of("America/Lima")).toLocalDateTime();
+        this.createdAt = createdAt != null ? createdAt : peruTime;
+        this.updatedAt = updatedAt != null ? updatedAt : peruTime;
         
         validatePrice();
         validateQuantity();
@@ -51,6 +78,7 @@ public class Product {
         this.size = size;
         this.price = Objects.requireNonNull(price, "Product price cannot be null");
         this.quantity = Objects.requireNonNull(quantity, "Product quantity cannot be null");
+        // Use system local time - no timezone conversion
         this.updatedAt = LocalDateTime.now();
         
         validatePrice();
@@ -68,6 +96,7 @@ public class Product {
             throw new IllegalStateException("Insufficient stock. Available: " + this.quantity + ", Required: " + quantityToReduce);
         }
         this.quantity -= quantityToReduce;
+        // Use system local time - no timezone conversion
         this.updatedAt = LocalDateTime.now();
     }
 
