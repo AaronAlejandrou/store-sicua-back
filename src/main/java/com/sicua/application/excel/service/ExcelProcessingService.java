@@ -1,6 +1,7 @@
 package com.sicua.application.excel.service;
 
 import com.sicua.application.excel.dto.ExcelProductImportRequest;
+import com.sicua.application.sale.dto.SaleResponse;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
@@ -11,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -335,5 +338,85 @@ public class ExcelProcessingService {
         createCell(row1, COL_CATEGORIA_NOMBRE, "Ejemplo Categoria", null);
         createCell(row1, COL_STOCK, 9999, null);
         createCell(row1, COL_MARCA, "Ejemplo Marca", null);
+    }
+    
+    /**
+     * Export sales to Excel format
+     */
+    public byte[] exportSalesToExcel(List<SaleResponse> sales) throws IOException {
+        logger.info("Exporting {} sales to Excel", sales.size());
+        
+        try (Workbook workbook = new XSSFWorkbook();
+             ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            
+            Sheet sheet = workbook.createSheet("Ventas");
+            
+            // Create styles
+            CellStyle headerStyle = createHeaderStyle(workbook);
+            CellStyle dataStyle = createDataStyle(workbook);
+            
+            // Define sales headers
+            String[] salesHeaders = {
+                "ID Venta", "Cliente", "DNI", "Fecha", "Total", "Estado", 
+                "Items", "Productos Vendidos"
+            };
+            
+            // Create header row
+            Row headerRow = sheet.createRow(0);
+            for (int i = 0; i < salesHeaders.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(salesHeaders[i]);
+                cell.setCellStyle(headerStyle);
+            }
+            
+            // Add sales data
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            for (int i = 0; i < sales.size(); i++) {
+                Row row = sheet.createRow(i + 1);
+                SaleResponse sale = sales.get(i);
+                
+                createCell(row, 0, sale.getId(), dataStyle);
+                createCell(row, 1, sale.getClientName() != null ? sale.getClientName() : "Anónimo", dataStyle);
+                createCell(row, 2, sale.getClientDni() != null ? sale.getClientDni() : "N/A", dataStyle);
+                
+                // Format date
+                String formattedDate = "";
+                try {
+                    LocalDateTime dateTime = sale.getDate(); // SaleResponse.getDate() returns LocalDateTime directly
+                    formattedDate = dateTime.format(dateFormatter);
+                } catch (Exception e) {
+                    formattedDate = sale.getDate().toString();
+                }
+                createCell(row, 3, formattedDate, dataStyle);
+                
+                createCell(row, 4, "S/ " + String.format("%.2f", sale.getTotal()), dataStyle);
+                createCell(row, 5, sale.getInvoiced() ? "Facturada" : "Pendiente", dataStyle);
+                createCell(row, 6, sale.getItems().size(), dataStyle);
+                
+                // Build products sold string
+                StringBuilder productsList = new StringBuilder();
+                for (int j = 0; j < sale.getItems().size(); j++) {
+                    var item = sale.getItems().get(j);
+                    if (j > 0) productsList.append("; ");
+                    productsList.append(item.getName())
+                              .append(" (Cant: ").append(item.getQuantity())
+                              .append(", Precio: S/ ").append(String.format("%.2f", item.getPrice())).append(")");
+                }
+                createCell(row, 7, productsList.toString(), dataStyle);
+            }
+            
+            // Auto-size columns
+            for (int i = 0; i < salesHeaders.length; i++) {
+                sheet.autoSizeColumn(i);
+                // Set minimum width to avoid very narrow columns
+                if (sheet.getColumnWidth(i) < 3000) {
+                    sheet.setColumnWidth(i, 3000);
+                }
+            }
+            
+            workbook.write(outputStream);
+            logger.info("Sales Excel export completed successfully");
+            return outputStream.toByteArray();
+        }
     }
 }

@@ -36,6 +36,20 @@ public class SaleRepositoryImpl implements SaleRepository {
     @Override
     public Sale save(Sale sale) {
         SaleEntity entity = toEntity(sale);
+        
+        // For updates, we need to preserve the existing entity to avoid orphaning items
+        if (sale.getId() != null) {
+            Optional<SaleEntity> existingEntity = jpaRepository.findById(sale.getId().getValue());
+            if (existingEntity.isPresent()) {
+                SaleEntity existing = existingEntity.get();
+                // Update only the fields that can change
+                existing.setInvoiced(sale.getInvoiced());
+                // Don't touch the items collection for mark as invoiced operation
+                SaleEntity savedEntity = jpaRepository.save(existing);
+                return toDomain(savedEntity);
+            }
+        }
+        
         SaleEntity savedEntity = jpaRepository.save(entity);
         return toDomain(savedEntity);
     }
