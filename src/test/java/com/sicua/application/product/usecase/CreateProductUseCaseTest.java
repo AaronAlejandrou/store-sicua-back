@@ -40,7 +40,8 @@ class CreateProductUseCaseTest {
                 "P001",
                 "Test Product",
                 "Test Brand",
-                "Electronics",
+                1,
+                "M",
                 new BigDecimal("99.99"),
                 10
         );
@@ -52,7 +53,8 @@ class CreateProductUseCaseTest {
                 "test-store",
                 "Test Product",
                 "Test Brand",
-                "Electronics",
+                1,
+                "M",
                 new BigDecimal("99.99"),
                 10
         );
@@ -65,7 +67,7 @@ class CreateProductUseCaseTest {
         // Assert
         assertNotNull(response);
         assertEquals("Test Product", response.getName());
-        assertEquals("Electronics", response.getCategory());
+        assertEquals(Integer.valueOf(1), response.getCategoryNumber());
         assertEquals(new BigDecimal("99.99"), response.getPrice());
         assertEquals(10, response.getQuantity());
 
@@ -79,7 +81,8 @@ class CreateProductUseCaseTest {
                 "P002",
                 "Test Product",
                 "Test Brand",
-                "Electronics",
+                1,
+                "M",
                 new BigDecimal("99.99"),
                 10
         );
