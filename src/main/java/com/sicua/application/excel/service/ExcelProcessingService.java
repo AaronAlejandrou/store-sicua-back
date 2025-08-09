@@ -13,6 +13,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -379,12 +381,18 @@ public class ExcelProcessingService {
                 createCell(row, 1, sale.getClientName() != null ? sale.getClientName() : "Anónimo", dataStyle);
                 createCell(row, 2, sale.getClientDni() != null ? sale.getClientDni() : "N/A", dataStyle);
                 
-                // Format date
+                // Format date - Convert server time to Peru local time (UTC-5)
                 String formattedDate = "";
                 try {
-                    LocalDateTime dateTime = sale.getDate(); // SaleResponse.getDate() returns LocalDateTime directly
-                    formattedDate = dateTime.format(dateFormatter);
+                    LocalDateTime dateTime = sale.getDate(); // Server time (UTC on Railway)
+                    
+                    // Convert server time to Peru timezone
+                    ZonedDateTime serverTime = dateTime.atZone(ZoneId.of("UTC")); // Assume server is UTC
+                    ZonedDateTime peruTime = serverTime.withZoneSameInstant(ZoneId.of("America/Lima")); // Peru timezone
+                    
+                    formattedDate = peruTime.format(dateFormatter);
                 } catch (Exception e) {
+                    // Fallback to original string representation
                     formattedDate = sale.getDate().toString();
                 }
                 createCell(row, 3, formattedDate, dataStyle);
