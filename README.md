@@ -1,12 +1,12 @@
 # SICUA Backend - Sistema de Inventario y Control de Ventas
 
-Backend desarrollado con **Spring Boot 3.2+**, **MySQL 8.0+** y arquitectura **Domain Driven Design (DDD)** para el sistema SICUA.
+Backend desarrollado con **Spring Boot 3.5.4**, **Supabase PostgreSQL** y arquitectura **Domain Driven Design (DDD)** para el sistema SICUA.
 
 ## 🚀 Características
 
 - ✅ Arquitectura DDD (Domain Driven Design)
-- ✅ Spring Boot 3.2+ con Java 17
-- ✅ MySQL 8.0+ como base de datos
+- ✅ Spring Boot 3.5.4 con Java 17
+- ✅ Supabase PostgreSQL como base de datos
 - ✅ APIs REST bien documentadas
 - ✅ Validaciones con Bean Validation
 - ✅ Manejo de transacciones
@@ -20,7 +20,7 @@ Backend desarrollado con **Spring Boot 3.2+**, **MySQL 8.0+** y arquitectura **D
 
 - **Java 17** o superior
 - **Maven 3.8+**
-- **MySQL 8.0+**
+- **Cuenta de Supabase** (gratuita disponible)
 - **Git**
 
 ## 🛠️ Instalación y Configuración
@@ -31,28 +31,28 @@ git clone <repository-url>
 cd store-sicua-back
 ```
 
-### 2. Configurar la base de datos
-```sql
--- Crear la base de datos
-CREATE DATABASE sicua_db;
+### 2. Configurar Supabase
+1. Crear una cuenta en [Supabase](https://supabase.com)
+2. Crear un nuevo proyecto
+3. Obtener las credenciales de la base de datos
+4. Ejecutar el script `schema.sql` en el editor SQL de Supabase
 
--- Crear usuario (opcional)
-CREATE USER 'sicua_user'@'localhost' IDENTIFIED BY 'sicua_password';
-GRANT ALL PRIVILEGES ON sicua_db.* TO 'sicua_user'@'localhost';
-FLUSH PRIVILEGES;
+### 3. Configurar variables de entorno
+Para mayor seguridad, utilizar variables de entorno:
+
+```bash
+export SUPABASE_DB_URL="jdbc:postgresql://db.ihfgttlxsgusitlnhdkj.supabase.co:5432/postgres?sslmode=require"
+export SUPABASE_DB_USERNAME="postgres"
+export SUPABASE_DB_PASSWORD="tu_password"
+export SUPABASE_PROJECT_URL="https://ihfgttlxsgusitlnhdkj.supabase.co"
+export SUPABASE_ANON_KEY="tu_anon_key"
 ```
 
-### 3. Configurar application.properties
-Actualizar las credenciales de la base de datos en `src/main/resources/application.properties`:
-
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/sicua_db
-spring.datasource.username=root
-spring.datasource.password=tu_password
+O actualizar directamente en `src/main/resources/application.properties`:
 ```
 
 ### 4. Ejecutar el script de inicialización
-Aplicar el script SQL ubicado en `src/main/resources/schema.sql` para crear las tablas necesarias.
+Aplicar el script SQL ubicado en `src/main/resources/schema.sql` en el editor SQL de Supabase para crear las tablas necesarias.
 
 ### 5. Compilar y ejecutar
 ```bash

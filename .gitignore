@@ -31,3 +31,24 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Environment Files ###
+.env
+.env.local
+.env.production
+.env.staging
+*.env
+
+### Supabase ###
+supabase/.env
+supabase/.temp
+supabase/.branches
+
+### Database ###
+*.db
+*.sqlite
+*.sqlite3
+
+### Logs ###
+logs/
+*.log

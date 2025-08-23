@@ -186,7 +186,7 @@ public class ExcelController {
         try {
             byte[] excelBytes = exportProductsUseCase.execute();
             
-            // Generate filename with timestamp
+            // Generate filename with timestamp (using local time)
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
             String filename = "inventario_" + timestamp + ".xlsx";
             

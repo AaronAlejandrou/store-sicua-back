@@ -196,7 +196,7 @@ public class SaleController {
             byte[] excelBytes = exportSalesToExcelUseCase.execute(
                 dateFilterType, startDate, endDate, selectedMonth, statusFilter);
             
-            // Generate filename with timestamp and filters
+            // Generate filename with timestamp (using local time) and filters
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
             StringBuilder filename = new StringBuilder("ventas");
             
